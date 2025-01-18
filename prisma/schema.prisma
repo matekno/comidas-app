@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Meal {
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  name             String?
+  location         String?
+  locationLat      Float?
+  locationLng      Float?
+  cost             Float?
+  currency         String? // Ejemplo: "USD", "EUR", "JPY"
+  tasteRating      Int?      @default(0) // Scale 0-10
+  presentationRating Int?    @default(0) // Scale 0-10
+  ambianceRating   Int?      @default(0) // Scale 0-10
+  qualityPriceRating Int?    @default(0) // Scale 0-10
+  comments         String?
+  category         MealCategory? @relation(fields: [categoryId], references: [id])
+  categoryId       String?
+  tags             MealTag[] @relation("MealTags")
+  timeOfDay        String? // Ejemplo: "Desayuno", "Almuerzo", "Cena"
+  recommendationSource String? // Ejemplo: "Google Maps", "Amigo", "Instagram"
+  photos           Photo[]
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  url       String
+  mealId    String
+  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model MealCategory {
+  id    String @id @default(cuid())
+  name  String
+  meals Meal[]
+}
+
+model MealTag {
+  id       String @id @default(cuid())
+  name     String
+  meals    Meal[] @relation("MealTags")
+} 
