@@ -83,6 +83,28 @@ const NewMealForm = () => {
     setForm({ ...form, [name]: value });
   };
 
+  const handleGetLocation = async () => {
+    if (!navigator.geolocation) {
+      alert("La geolocalización no es soportada por tu navegador.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setForm({
+          ...form,
+          locationLat: latitude.toString(),
+          locationLng: longitude.toString(),
+        });
+      },
+      (error) => {
+        console.error("Error obteniendo la ubicación:", error);
+        alert("No se pudo obtener la ubicación.");
+      }
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -124,9 +146,7 @@ const NewMealForm = () => {
           <CardTitle className="text-2xl font-bold text-purple-800">
             Registrar comida
           </CardTitle>
-          <CardDescription>
-            Guardar los detalles de la masacre.
-          </CardDescription>
+          <CardDescription>Guardar los detalles de la masacre.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -149,13 +169,22 @@ const NewMealForm = () => {
                   <MapPin className="w-4 h-4" />
                   Ubicación
                 </Label>
-                <Input
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  placeholder="Nombre del restaurante"
-                  className="mt-1"
-                />
+                <div className="flex items-center gap-2">
+                  <Input
+                    name="location"
+                    value={form.location}
+                    onChange={handleChange}
+                    placeholder="Nombre del restaurante"
+                    className="mt-1 flex-grow"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleGetLocation}
+                    className="px-4 py-2 text-white bg-violet-500 rounded hover:bg-violet-600"
+                  >
+                    Obtener ubicación
+                  </Button>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     name="locationLat"
